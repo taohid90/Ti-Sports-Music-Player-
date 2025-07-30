@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Video + Audio</title>
+</head>
+<body style="margin:0; background:#000;">
+  <video id="videoPlayer" autoplay loop muted controls style="width:100%; height:auto;"></video>
+  <audio id="audioPlayer" autoplay loop></audio>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+    const video = document.getElementById('videoPlayer');
+    const audio = document.getElementById('audioPlayer');
+
+    const videoSrc = "https://vod-adaptive-ak.vimeocdn.com/exp=1753849273~acl=%2F5fb7c5a0-777d-46de-9a73-70a3bdeb7e30%2F%2A~hmac=c065acfbe979beb5fa5ba95f0a81df0ea1ed0c3fec73268ad672246b305d141f/5fb7c5a0-777d-46de-9a73-70a3bdeb7e30/v2/playlist/av/387caed2/avf/5e6c6053/media.m3u8?pathsig=8c953e4f~D5jeW-NI4A4Q6OSnjw3-dV1EJlSwahJ3G0b2z3mWsXQ&qsr=1&r=dXMtZWFzdDE%3D&sf=ts&st=video&omit=av1-hevc-opus&rh=1d03hA";
+
+    const audioSrc = "https://skyfire.vimeocdn.com/1753849347-0xde7b646cf07b642afec8c4c06cad2f986de751a7/5fb7c5a0-777d-46de-9a73-70a3bdeb7e30/v2/playlist/av/387caed2/avf/183b5790/media.m3u8?pathsig=8c953e4f~itL2gWQd-mUumrcJVmCT0nizjVLOYVjEeIz2e30XKWw&qsr=1&r=dXMtY2VudHJhbDE%3D&sf=ts&st=audio&omit=av1-hevc-opus&rh=1d03hA";
+
+    // Load video
+    if (Hls.isSupported()) {
+      const hlsVideo = new Hls();
+      hlsVideo.loadSource(videoSrc);
+      hlsVideo.attachMedia(video);
+
+      const hlsAudio = new Hls();
+      hlsAudio.loadSource(audioSrc);
+      hlsAudio.attachMedia(audio);
+    } else {
+      video.src = videoSrc;
+      audio.src = audioSrc;
+    }
+
+    // Keep video & audio in sync
+    setInterval(() => {
+      if (Math.abs(video.currentTime - audio.currentTime) > 0.3) {
+        audio.currentTime = video.currentTime;
+      }
+    }, 500);
+
+    // Optional: ensure audio always plays when video plays
+    video.addEventListener('play', () => audio.play());
+    video.addEventListener('pause', () => audio.pause());
+  </script>
+</body>
+</html>
